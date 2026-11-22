@@ -64,5 +64,23 @@ head -50 bench/rows.tsv >"$WORK/short.txt" 2>/dev/null \
   && cmp -s "$WORK/a.out" "$WORK/b.out" \
   && pass 'split does not touch short rows' || fail 'split changes short rows'
 
+# Multilingual path: language prefixes take a token slot each, so the split
+# budget must shrink rather than overflow.
+if [[ -d models/nllb && -d tokenizer/nllb ]]; then
+  # int8 collapses into repeats on NLLB now and then; int8_float16 is stable.
+  if ./run.sh "$PY" translate_gpu.py --model models/nllb --hf-tokenizer tokenizer/nllb \
+    --src-prefix tur_Latn --tgt-prefix fin_Latn --src "$WORK/mixed.txt" \
+    --out "$WORK/nllb.out" --batch-size 64 --compute-type int8_float16 >"$WORK/log" 2>&1; then
+    [[ $(wc -l <"$WORK/nllb.out") -eq $(wc -l <"$WORK/mixed.txt") ]] \
+      && pass 'nllb prefixes + split' || fail 'nllb row count'
+    grep -q '_Latn' "$WORK/nllb.out" && fail 'nllb prefix leaked' \
+      || pass 'nllb prefix stripped'
+  else
+    fail 'nllb crashed'
+  fi
+else
+  printf 'skip nllb (models/nllb or tokenizer/nllb missing)\n'
+fi
+
 printf '%d failure(s)\n' "$fails"
 exit "$fails"

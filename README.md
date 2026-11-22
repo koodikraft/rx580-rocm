@@ -58,8 +58,18 @@ do not work.
 python tools/prepare_model.py --hf-model facebook/nllb-200-distilled-600M \
   --model-dir models/nllb --tokenizer-dir tokenizer/nllb
 ./run.sh python translate_gpu.py --model models/nllb --hf-tokenizer tokenizer/nllb \
-  --src-prefix tur_Latn --tgt-prefix fin_Latn --src rows.txt --out out.txt
+  --src-prefix tur_Latn --tgt-prefix fin_Latn --src rows.txt --out out.txt \
+  --compute-type int8_float16 --batch-size 256
 ```
+
+**NLLB is not reliable with `int8` on the GPU.** With a batch over 1 the decoder
+sometimes collapses into repeated tokens (`ga ga ga ga …`, `▁( ▁( ▁(`); roughly
+0–1 row in 100 with the settings above. `int8` output is also not fully
+repeatable — the same input gives different rows between runs, while OPUS-MT is
+byte-identical every time. Use `int8_float16` or `float16` (0/10 failed runs,
+repeatable) and keep the batch at 256 or below: 512 dies with
+`CUDA failed with error out of memory` (large vocabulary, beam 4). The measured
+OPUS-MT numbers are not affected.
 
 Empty input gives empty output; the row count is checked. CRLF is fine.
 
@@ -160,8 +170,18 @@ kielen. Dekooderimallit (Llama, Qwen) eivät toimi.
 python tools/prepare_model.py --hf-model facebook/nllb-200-distilled-600M \
   --model-dir models/nllb --tokenizer-dir tokenizer/nllb
 ./run.sh python translate_gpu.py --model models/nllb --hf-tokenizer tokenizer/nllb \
-  --src-prefix tur_Latn --tgt-prefix fin_Latn --src rivit.txt --out tulos.txt
+  --src-prefix tur_Latn --tgt-prefix fin_Latn --src rivit.txt --out tulos.txt \
+  --compute-type int8_float16 --batch-size 256
 ```
+
+**NLLB ei ole luotettava `int8`:lla GPU:lla.** Yli 1:n eräkoolla dekooderi
+romahtaa toisinaan toistojonoksi (`ga ga ga ga …`, `▁( ▁( ▁(`); yllä olevilla
+asetuksilla noin 0–1 riviä sadasta. `int8`-tulos ei myöskään ole täysin
+toistettava — sama syöte antaa eri rivejä ajojen välillä, kun taas OPUS-MT on
+aina tavu-identtinen. Käytä `int8_float16`:ää tai `float16`:ta (0/10 epäonnistui,
+toistettava) ja pidä eräkoko enintään 256:ssa: 512 kaatuu virheeseen
+`CUDA failed with error out of memory` (iso sanasto, beam 4). OPUS-MT:n mitatut
+luvut eivät muutu.
 
 Tyhjä syöte → tyhjä tulos; rivimäärä tarkistetaan. CRLF käy.
 

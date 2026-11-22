@@ -75,7 +75,7 @@ def main() -> int:
     ap.add_argument("--out", required=True, help="output text file")
     ap.add_argument("--batch-size", type=int, default=256)
     ap.add_argument("--beam-size", type=int, default=4)
-    ap.add_argument("--compute-type", default="int8", choices=["int8", "float16", "float32", "bfloat16"])
+    ap.add_argument("--compute-type", default="int8", choices=["int8", "int8_float16", "float16", "float32", "bfloat16"])
     ap.add_argument(
         "--src-prefix",
         default=None,
