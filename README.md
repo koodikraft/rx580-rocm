@@ -23,6 +23,7 @@ Needs the ROCm 5.7 stack at `/srv/rocm-root/stack57` (see
 python tools/prepare_model.py --hf-model koodikraft/koodikraft_opus_tr_fi  # → models/, tokenizer/
 bash tools/build_ct2.sh                                                   # → ct2/
 ./run.sh ./tools/hip_smoke                                                # dev=1, err=no error
+PY=python tools/selftest.sh                                               # regression cases, exit code = failures
 ```
 
 `ct2/` is generated. If you copy the binary by hand, keep the symlink
@@ -63,6 +64,11 @@ python tools/prepare_model.py --hf-model facebook/nllb-200-distilled-600M \
 Empty input gives empty output and the row count is verified (`row mismatch`);
 CRLF is fine. `koodikraft/opus-mt-tr-fi-2020-04-12` lacks embedding weights and
 outputs only dots — use `koodikraft/koodikraft_opus_tr_fi`.
+
+Rows longer than the model's position limit (512 tokens) are split at sentence
+ends and joined back, so output rows stay 1:1 with input. `--no-split` disables
+this (the CLI then aborts on a long row); `--max-source-tokens` changes the limit.
+Short rows are untouched.
 
 Scoring: `python tools/score.py --ref bench/ref.fi.tsv --hf-tokenizer tokenizer out.txt`
 (data: [bench/README](bench/README.md)).
@@ -123,6 +129,7 @@ Vaatii ROCm 5.7 -pinon polussa `/srv/rocm-root/stack57` (ks.
 python tools/prepare_model.py --hf-model koodikraft/koodikraft_opus_tr_fi  # → models/, tokenizer/
 bash tools/build_ct2.sh                                                   # → ct2/
 ./run.sh ./tools/hip_smoke                                                # dev=1, err=no error
+PY=python tools/selftest.sh                                               # regressiot, exit = virheiden määrä
 ```
 
 `ct2/` generoidaan. Jos kopioit binäärin käsin, säilytä symlinkki
@@ -162,6 +169,11 @@ python tools/prepare_model.py --hf-model facebook/nllb-200-distilled-600M \
 Tyhjä syöte antaa tyhjän tuloksen ja rivimäärä tarkistetaan (`row mismatch`); CRLF
 käy. `koodikraft/opus-mt-tr-fi-2020-04-12`-reposta puuttuvat embedding-painot ja
 tuotos on pelkkää pistejonoa — käytä mallia `koodikraft/koodikraft_opus_tr_fi`.
+
+Mallin positiorajan (512 tokenia) ylittävät rivit pilkotaan lauseenloppuihin ja
+yhdistetään takaisin, joten tuloksen rivimäärä pysyy 1:1. `--no-split` poistaa
+pilkkomisen (silloin CLI kaatuu pitkään riviin); `--max-source-tokens` vaihtaa rajan.
+Lyhyet rivit säilyvät muuttumattomina.
 
 Pisteytys: `python tools/score.py --ref bench/ref.fi.tsv --hf-tokenizer tokenizer tulos.txt`
 (aineisto: [bench/README](bench/README.md)).
