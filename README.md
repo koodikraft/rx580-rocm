@@ -61,20 +61,6 @@ outputs only dots — use `koodikraft/koodikraft_opus_tr_fi`.
 Scoring: `python tools/score.py --ref bench/ref.fi.tsv --hf-tokenizer tokenizer out.txt`
 (data: [bench/README](bench/README.md)).
 
-## Files
-
-| Tracked | Not tracked |
-|---|---|
-| `run.sh`, `translate_gpu.py`, `tools/*`, `patches/`, `tokenizer/` | `ct2/`, `models/`, `tokenizer/*/` |
-| `LICENSE`, `THIRD_PARTY.md`, `bench/README.md` | `bench/*.tsv`, run output, `.cursor/`, `.vscode/`, `AGENTS.md` |
-
-`run.sh` sets `LD_LIBRARY_PATH` and `HSA_OVERRIDE_GFX_VERSION`; the binaries also
-carry a `RUNPATH` (`$ORIGIN` + stack), so it is a convenience. If the stack moves,
-patch the `RUNPATH` on **both** `ct2/ct2-translator` and
-`ct2/libctranslate2.so.4.9.0` — keep the symlink
-`libctranslate2.so.4` → `libctranslate2.so.4.9.0`, then check
-`ldd ct2/ct2-translator | grep 'not found'`.
-
 ## Why ROCm 5.7 and not 6.4
 
 6.4's `rocBLAS` ships no gfx803 kernels (`908, 90a, 942, 1030, 110x, 120x`), so it
@@ -167,20 +153,6 @@ tuotos on pelkkää pistejonoa — käytä mallia `koodikraft/koodikraft_opus_tr
 
 Pisteytys: `python tools/score.py --ref bench/ref.fi.tsv --hf-tokenizer tokenizer tulos.txt`
 (aineisto: [bench/README](bench/README.md)).
-
-## Tiedostot
-
-| Versioissa | Ei versioissa |
-|---|---|
-| `run.sh`, `translate_gpu.py`, `tools/*`, `patches/`, `tokenizer/` | `ct2/`, `models/`, `tokenizer/*/` |
-| `LICENSE`, `THIRD_PARTY.md`, `bench/README.md` | `bench/*.tsv`, ajotulosteet, `.cursor/`, `.vscode/`, `AGENTS.md` |
-
-`run.sh` asettaa `LD_LIBRARY_PATH`in ja `HSA_OVERRIDE_GFX_VERSION`in; binääreissä
-on myös `RUNPATH` (`$ORIGIN` + pino), joten se on mukavuus. Jos pino siirretään,
-päivitä `RUNPATH` **molempiin**: `ct2/ct2-translator` ja
-`ct2/libctranslate2.so.4.9.0`. Säilytä symlinkki
-`libctranslate2.so.4` → `libctranslate2.so.4.9.0` ja tarkista
-`ldd ct2/ct2-translator | grep 'not found'`.
 
 ## Miksi ROCm 5.7 eikä 6.4
 
