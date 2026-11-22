@@ -25,6 +25,12 @@ bash tools/build_ct2.sh                                                   # → 
 ./run.sh ./tools/hip_smoke                                                # dev=1, err=no error
 ```
 
+`ct2/` is generated. If you copy the binary by hand, keep the symlink
+`ct2/libctranslate2.so.4` → `libctranslate2.so.4.9.0` (startup fails without it)
+and set the `RUNPATH` on **both** `ct2/ct2-translator` and
+`ct2/libctranslate2.so.4.9.0`; then check
+`ldd ct2/ct2-translator | grep 'not found'`.
+
 ## Use
 
 Simplest:
@@ -118,6 +124,12 @@ python tools/prepare_model.py --hf-model koodikraft/koodikraft_opus_tr_fi  # →
 bash tools/build_ct2.sh                                                   # → ct2/
 ./run.sh ./tools/hip_smoke                                                # dev=1, err=no error
 ```
+
+`ct2/` generoidaan. Jos kopioit binäärin käsin, säilytä symlinkki
+`ct2/libctranslate2.so.4` → `libctranslate2.so.4.9.0` (ilman sitä käynnistys
+kaatuu) ja aseta `RUNPATH` **molempiin**: `ct2/ct2-translator` ja
+`ct2/libctranslate2.so.4.9.0`. Tarkista lopuksi
+`ldd ct2/ct2-translator | grep 'not found'`.
 
 ## Käyttö
 
