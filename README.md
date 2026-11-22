@@ -61,14 +61,11 @@ python tools/prepare_model.py --hf-model facebook/nllb-200-distilled-600M \
   --src-prefix tur_Latn --tgt-prefix fin_Latn --src rows.txt --out out.txt
 ```
 
-Empty input gives empty output and the row count is verified (`row mismatch`);
-CRLF is fine. `koodikraft/opus-mt-tr-fi-2020-04-12` lacks embedding weights and
-outputs only dots — use `koodikraft/koodikraft_opus_tr_fi`.
+Empty input gives empty output; the row count is checked. CRLF is fine.
 
-Rows longer than the model's position limit (512 tokens) are split at sentence
-ends and joined back, so output rows stay 1:1 with input. `--no-split` disables
-this (the CLI then aborts on a long row); `--max-source-tokens` changes the limit.
-Short rows are untouched.
+Rows over the model limit (512 tokens) are split at sentence ends and joined
+back (rows stay 1:1). `--no-split` turns it off, `--max-source-tokens` changes the
+limit. Short rows are untouched.
 
 Scoring: `python tools/score.py --ref bench/ref.fi.tsv --hf-tokenizer tokenizer out.txt`
 (data: [bench/README](bench/README.md)).
@@ -166,14 +163,11 @@ python tools/prepare_model.py --hf-model facebook/nllb-200-distilled-600M \
   --src-prefix tur_Latn --tgt-prefix fin_Latn --src rivit.txt --out tulos.txt
 ```
 
-Tyhjä syöte antaa tyhjän tuloksen ja rivimäärä tarkistetaan (`row mismatch`); CRLF
-käy. `koodikraft/opus-mt-tr-fi-2020-04-12`-reposta puuttuvat embedding-painot ja
-tuotos on pelkkää pistejonoa — käytä mallia `koodikraft/koodikraft_opus_tr_fi`.
+Tyhjä syöte → tyhjä tulos; rivimäärä tarkistetaan. CRLF käy.
 
-Mallin positiorajan (512 tokenia) ylittävät rivit pilkotaan lauseenloppuihin ja
-yhdistetään takaisin, joten tuloksen rivimäärä pysyy 1:1. `--no-split` poistaa
-pilkkomisen (silloin CLI kaatuu pitkään riviin); `--max-source-tokens` vaihtaa rajan.
-Lyhyet rivit säilyvät muuttumattomina.
+Mallin positiorajan (512 tokenia) ylittävät rivit pilkotaan lauseenlopuista ja
+yhdistetään takaisin (rivimäärä 1:1). `--no-split` poistaa pilkkomisen,
+`--max-source-tokens` vaihtaa rajan. Lyhyet rivit säilyvät ennallaan.
 
 Pisteytys: `python tools/score.py --ref bench/ref.fi.tsv --hf-tokenizer tokenizer tulos.txt`
 (aineisto: [bench/README](bench/README.md)).
