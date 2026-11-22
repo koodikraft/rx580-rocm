@@ -13,7 +13,7 @@ use TR→FI OPUS-MT: 117 rows/s (CLI), 97–98 rows/s end to end, BLEU 12.39 / c
 
 ## Quick start
 
-Needs the ROCm 5.7 stack at `/srv/rocm-root/stack57` (see
+Needs the ROCm 5.7 stack at `$ROCM_STACK57` (default `/srv/rocm-root/stack57`, see
 [Installing the stack](#installing-the-rocm-stack)) and a Python with
 `transformers` + `ctranslate2`, e.g.
 `/srv/ai-agent/workspaces/aitranskriptio/backend/venv/bin/python` — used as
@@ -97,15 +97,17 @@ stack is 5.7.
 ## Installing the ROCm stack
 
 ```bash
-# 6.4 runtime + 5.7 stack unpacked into /srv (no dpkg: Debian 13 dependency hell)
+# 6.4 runtime + 5.7 stack unpacked into $ROCM_STACK57 (no dpkg: Debian 13 dependency hell)
 # deb [arch=amd64 trusted=yes] https://repo.radeon.com/rocm/apt/5.7 jammy main
-ln -sfn /usr/lib/llvm-17/lib/clang/17/amdgcn /srv/rocm-root/stack57/amdgcn
-bash tools/build_ct2.sh   # CT2_SRC=/srv/rocm-test/ct2, compiler must be clang++-17
+export ROCM_STACK57=/path/to/stack57      # default /srv/rocm-root/stack57
+export CT2_SRC=/path/to/CTranslate2       # default /srv/rocm-test/ct2
+ln -sfn "$(clang++-17 -print-resource-dir)/amdgcn" "$ROCM_STACK57/amdgcn"
+bash tools/build_ct2.sh                   # compiler must be clang++-17
 ```
 
 The patch fixes `__syncwarp`, the 5.7 `hipblasDatatype_t` signature and
 `std::nearbyint` deduction. ROCm clang 19 pulls 6.4 libraries and the CMake import
-targets pull 6.4 headers — copy those into `stack57`.
+targets pull 6.4 headers — copy those into `$ROCM_STACK57`.
 
 MIT — see [LICENSE](LICENSE) and [THIRD_PARTY.md](THIRD_PARTY.md).
 
@@ -127,7 +129,7 @@ Vain yksi kortti.
 
 ## Pika-aloitus
 
-Vaatii ROCm 5.7 -pinon polussa `/srv/rocm-root/stack57` (ks.
+Vaatii ROCm 5.7 -pinon polussa `$ROCM_STACK57` (oletus `/srv/rocm-root/stack57`, ks.
 [Pinon asennus](#rocm-pinon-asennus)) ja Pythonin, jossa on `transformers` +
 `ctranslate2` (testattu:
 `/srv/ai-agent/workspaces/aitranskriptio/backend/venv/bin/python`).
@@ -209,14 +211,16 @@ ajo kaatuu virheeseen `TensileLibrary.dat: Illegal seek for GPU arch : gfx803`;
 ## ROCm-pinon asennus
 
 ```bash
-# 6.4 runtime + 5.7 pino purettuina /srv:hen (ei dpkg: Debian 13:n riippuvuudet)
+# 6.4 runtime + 5.7 pino purettuina $ROCM_STACK57:ään (ei dpkg: Debian 13:n riippuvuudet)
 # deb [arch=amd64 trusted=yes] https://repo.radeon.com/rocm/apt/5.7 jammy main
-ln -sfn /usr/lib/llvm-17/lib/clang/17/amdgcn /srv/rocm-root/stack57/amdgcn
-bash tools/build_ct2.sh   # CT2_SRC=/srv/rocm-test/ct2, kääntäjänä clang++-17
+export ROCM_STACK57=/polku/stack57        # oletus /srv/rocm-root/stack57
+export CT2_SRC=/polku/CTranslate2         # oletus /srv/rocm-test/ct2
+ln -sfn "$(clang++-17 -print-resource-dir)/amdgcn" "$ROCM_STACK57/amdgcn"
+bash tools/build_ct2.sh                   # kääntäjänä clang++-17
 ```
 
 Patch korjaa `__syncwarp`in, 5.7:n `hipblasDatatype_t`-allekirjoituksen ja
 `std::nearbyint`-deduktion. ROCm clang 19 vetää 6.4-kirjastot ja CMake-targetit
-6.4-headerit — kopioi ne `stack57`:ään.
+6.4-headerit — kopioi ne `$ROCM_STACK57`:ään.
 
 MIT — ks. [LICENSE](LICENSE) ja [THIRD_PARTY.md](THIRD_PARTY.md).
