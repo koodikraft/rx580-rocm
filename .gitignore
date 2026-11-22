@@ -1,0 +1,34 @@
+# Konekohtaiset, generoidut tai suuret tiedostot.
+# Versioissa pysyvät: lähde, patchit, dokumentaatio, tokenisaattori ja lisenssit.
+
+# HIP-buildin tuotokset — syntyvät tools/build_ct2.sh:llä.
+/ct2/
+/tools/hip_smoke
+
+# Mallipainot — noudetaan tools/prepare_model.py:llä (mikä tahansa HF-malli).
+/models/
+# Muiden mallien tokenisaattorit (--tokenizer-dir); oletus tokenizer/ on versioissa.
+/tokenizer/*/
+
+# Benchmark-data. Mukana vain kuvaus bench/README.md; aineisto on johdettu
+# TR→FI-muistista (OPUS/OpenSubtitles) ja pidetään sen vuoksi repon ulkopuolella.
+/bench/*
+!/bench/README.md
+
+# Python
+__pycache__/
+*.pyc
+
+# Paikalliset yliajot
+.env
+*.local
+
+# Editorit / käyttis
+.DS_Store
+*.swp
+.venice/
+.cursor/
+.vscode/
+
+# Konekohtaiset agenttiohjeet
+AGENTS.md
